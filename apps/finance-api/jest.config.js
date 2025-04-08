@@ -11,6 +11,7 @@ module.exports = {
     "/node_modules/",
     "/src/index.ts",
     "/src/errors/",
+    "/src/repositories/",
     "/src/providers/",
     "/src/utils/",
     "/src/config/", // ✅ Ignore config files

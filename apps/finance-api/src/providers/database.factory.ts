@@ -1,3 +1,6 @@
+import { User, Transaction } from "@finance/types";
+import { PrismaTransactionDatabaseProvider } from "../repositories/prisma-transaction-database.provider";
+import { PrismaUserDatabaseProvider } from "../repositories/prisma-user-database.provider";
 import { DatabaseProvider } from "./database.provider";
 import { FileDatabaseProvider } from "./file-database.provider";
 import { MemoryDatabaseProvider } from "./memory-database.provider";
@@ -7,6 +10,7 @@ export enum DatabaseType {
   FILE = "file",
   MEMORY = "memory",
   POSTGRES = "postgres",
+  PRISMA = "prisma", // postgresql
 }
 
 export class DatabaseFactory {
@@ -27,6 +31,16 @@ export class DatabaseFactory {
         case DatabaseType.POSTGRES:
           instance = new PostgresDatabaseProvider<T>(name);
           break;
+        case DatabaseType.PRISMA:
+          if (name === "users") {
+            instance = new PrismaUserDatabaseProvider<T>();
+            break;
+          }
+          if (name === "transactions") {
+            instance = new PrismaTransactionDatabaseProvider<T>();
+            break;
+          }
+          throw new Error(`No Prisma provider for entity: ${name}`);
         default:
           throw new Error("Invalid database type");
       }

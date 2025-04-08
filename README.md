@@ -1,6 +1,5 @@
 # finance-monorepo
 
-
 # 📌 Finance API
 
 ## 🚀 Project Setup and Startup
@@ -41,6 +40,17 @@ To install the project's dependencies, run:
 ```bash
 pnpm install
 ```
+
+### 🔧 **Prisma Client**
+
+After installing dependencies, generate the Prisma client:
+
+```bash
+cd apps/finance-api
+npx prisma generate
+```
+
+> This step is required before running the API if Prisma is used.
 
 ### ▶️ **Running the Project api**
 
@@ -104,14 +114,8 @@ docker pull postgres
 To avoid conflicts, use this command to **start** the database if it exists, or **create** it if it doesn't:
 
 ```bash
-[[ $(docker ps -aq -f name=^pgdb$) ]] && docker start pgdb || (export $(grep -v '^#' .env | xargs) && \
-docker run --name pgdb \
-  -e POSTGRES_USER=$PG_USER \
-  -e POSTGRES_PASSWORD=$PG_PASSWORD \
-  -e POSTGRES_DB=$PG_DB \
-  -p $PG_PORT:$PG_PORT \
-  -v $(pwd)/src/config/init.sql:/docker-entrypoint-initdb.d/init.sql \
-  -d postgres)
+pnpm start:db
+pnpm start:seed
 ```
 
 This command ensures credentials are **not hardcoded** in `package.json` and avoids container conflicts.
@@ -137,15 +141,41 @@ Make sure the `.env` file is **not versioned** by adding it to `.gitignore`:
 echo ".env" >> .gitignore
 ```
 
+Also, ignore generated Prisma client code:
 
+```bash
+# Prisma
+prisma/generated/
+```
+
+---
+
+## 🧱 **Prisma Migrations**
+
+This project uses [Prisma](https://www.prisma.io/) as the ORM to interact with the database.
+
+### ▶️ Apply existing migrations
+
+```bash
+cd apps/finance-api
+npx prisma migrate dev
+```
+
+> Make sure your `.env` file includes `DATABASE_URL`, or use `dotenv-cli` to load it from `.env.dev`.
+
+### 🔄 Reset the database and re-apply migrations
+
+```bash
+npx prisma migrate reset
+```
+
+> This will drop and recreate the database, and re-apply all migrations.
 
 📌 **By following these steps, we ensure that all developers and deployment environments use the same version of `pnpm`, and have a consistent and easily restorable PostgreSQL database setup.** 🚀
 
-
-
 Finance Monorepo Example
 
-NodeJS with 
+NodeJS with
 
 - Winston
 - Loggin middlewares (JSON, durations, status code...)
@@ -153,5 +183,16 @@ NodeJS with
 - Cors
 - Helmet
 - express validator
-- Rate limits
-- Test (supertest, jest)
+- Rate limiter
+- Test (supertest, jest) 100% Coverage
+- Database provider with memory, file and postgres options
+- PostgreSQL (Docker) & scripts to initialize and seed the database
+
+SPA with
+
+- React
+- Vite
+- Tailwind
+- React Router
+- React Feather Icons
+- React Hooks

@@ -1,15 +1,25 @@
+// apps/finance-api/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id       Int    @id @default(autoincrement())
+  id String @id @default(cuid())
   name     String
   email    String @unique
   password String
+}
+
+model Transaction {
+  id String @id @default(cuid())
+  senderEmail   String
+  receiverEmail String
+  amount        Float
 }
